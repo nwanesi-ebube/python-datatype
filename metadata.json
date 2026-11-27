@@ -1,0 +1,6 @@
+{
+  "name": "Python Data Types Lab",
+  "description": "An interactive, animated Python learning simulator for variables, print(), input() and every core data type with step-by-step memory visualisation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
