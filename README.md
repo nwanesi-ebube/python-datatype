@@ -48,7 +48,7 @@ npm run preview
 3. Under **Build and deployment > Source**, choose **GitHub Actions**.
 4. Push to the `main` branch (or run **Actions > Deploy to GitHub Pages > Run workflow** manually).
 
-The workflow in `.github/workflows/deploy.yml` runs `npm ci`, builds with `BASE_PATH=/python-datatype/`, and deploys `./dist` to `https://nwanesi-ebube.github.io/python-datatype/`.
+The workflow in `.github/workflows/deploy.yml` installs dependencies cleanly for Linux (`npm install`), builds with `BASE_PATH=/python-datatype/`, and deploys `./dist` to `https://nwanesi-ebube.github.io/python-datatype/`.
 
 ---
 
