@@ -11,3 +11,6 @@ coverage/
 .idea/
 *.swp
 *.swo
+src-tauri/target/
+src-tauri/gen/schemas/
+src-tauri/icons/

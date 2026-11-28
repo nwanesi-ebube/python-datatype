@@ -62,6 +62,33 @@ Once loaded once online, all lessons, code editor, exercises, mini-games, and pr
 
 ---
 
+## Desktop App (Windows)
+
+Students who prefer a standalone Windows installer (`.exe`) that installs once and works completely offline without opening a web browser can download it from the GitHub Releases page:
+
+**Download Windows installer:** <https://github.com/nwanesi-ebube/python-datatype/releases>
+
+### How to Install on Windows
+
+1. Open the Releases link above and download the `.exe` installer under **Assets** (for example `Python Data Types Lab_1.0.0_x64-setup.exe`).
+2. Double-click the downloaded `.exe` file. It installs per-user and **does not require administrator rights**.
+3. **Windows SmartScreen notice**: Because the installer is not commercially code-signed, Windows may show *"Windows protected your PC"*. Click **More info**, then click **Run anyway** to continue safely.
+4. **Very old Windows 10 PCs**: Windows 11 and modern Windows 10 PCs already include Microsoft WebView2. If a very old Windows 10 computer does not have it yet, the installer automatically downloads Microsoft's WebView2 component once during installation (internet required for that first-time setup only).
+5. Once installed, launch **Python Data Types Lab** from the Start Menu or Desktop shortcut and use it 100% offline. Progress, XP, badges, settings, and saved code persist automatically between launches.
+
+### How to Make a New Desktop Release
+
+1. Update `"version"` to the new number (for example `"1.0.1"`) in **both** `package.json` and `src-tauri/tauri.conf.json` (and optionally `src-tauri/Cargo.toml`).
+2. Commit and push your changes to `main`.
+3. In GitHub, open **Actions > Desktop release > Run workflow** (or push a Git tag starting with `v`, such as `v1.0.1`).
+4. Once finished, the new `.exe` installer appears automatically on the **Releases** page.
+
+### How to Uninstall on Windows
+
+Open **Windows Settings > Apps > Installed apps** (or **Add or remove programs**), search for **Python Data Types Lab**, and click **Uninstall**.
+
+---
+
 ## Licence
 
 No licence file is included yet. Remember to choose and add a licence in your GitHub repository settings (for example, MIT or Apache-2.0) if you want others to know how they may reuse or share your code.

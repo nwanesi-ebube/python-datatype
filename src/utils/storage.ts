@@ -1,4 +1,5 @@
 import { UserProgress } from '../types/lab';
+import { saveTextFile } from './desktop';
 
 const DB_NAME = 'python_data_types_lab_db';
 const STORE_NAME = 'progress';
@@ -142,15 +143,13 @@ export function exportProgressJSON(progress: UserProgress): void {
     version: 1,
     progress,
   };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `python-lab-progress-${new Date().toISOString().slice(0, 10)}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  void saveTextFile({
+    filename: `python-lab-progress-${new Date().toISOString().slice(0, 10)}.json`,
+    content: JSON.stringify(payload, null, 2),
+    mimeType: 'application/json',
+    filterName: 'JSON Files',
+    extensions: ['json'],
+  });
 }
 
 export async function parseImportedProgress(file: File): Promise<UserProgress | null> {

@@ -53,6 +53,7 @@ import {
   TraceStep,
   UserProgress,
 } from './types/lab';
+import { isTauriDesktop, openExternalUrl } from './utils/desktop';
 import { loadProgressAsync, loadProgressSync, saveProgress } from './utils/storage';
 
 type MobileTab = 'learn' | 'code' | 'output' | 'memory' | 'menu';
@@ -124,6 +125,7 @@ export default function App() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [mobileTab, setMobileTab] = useState<MobileTab>('learn');
   const [engineMode, setEngineMode] = useState<EngineMode>('builtin');
+  const isDesktop = isTauriDesktop();
 
   // Active lesson & code state
   const activeLesson = useMemo(() => {
@@ -156,6 +158,23 @@ export default function App() {
       setProgress(loaded);
     });
   }, []);
+
+  // In desktop mode, open external http/https links in the system's default browser
+  useEffect(() => {
+    if (!isDesktop) return;
+    const handleExternalLinkClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      const anchor = target?.closest('a[href]') as HTMLAnchorElement | null;
+      if (!anchor) return;
+      const href = anchor.getAttribute('href') || '';
+      if (/^https?:\/\//i.test(href)) {
+        e.preventDefault();
+        void openExternalUrl(href);
+      }
+    };
+    document.addEventListener('click', handleExternalLinkClick);
+    return () => document.removeEventListener('click', handleExternalLinkClick);
+  }, [isDesktop]);
 
   // Persist progress and unlock any earned achievement badges automatically
   useEffect(() => {
@@ -1224,7 +1243,7 @@ export default function App() {
 
       {/* Calm Offline Notice & PWA Update Prompt */}
       <OfflineToast />
-      <PWAUpdatePrompt />
+      {!isDesktop && <PWAUpdatePrompt />}
     </div>
   );
 }

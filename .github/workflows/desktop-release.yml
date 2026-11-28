@@ -1,0 +1,63 @@
+name: Desktop release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-desktop:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "windows-latest"
+            args: ""
+          # To add macOS or Linux later, uncomment the lines below:
+          # - platform: "macos-latest"
+          #   args: "--target aarch64-apple-darwin"
+          # - platform: "ubuntu-22.04"
+          #   args: ""
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          package-manager-cache: false
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust dependencies
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
+      - name: Install frontend dependencies
+        shell: bash
+        run: rm -f package-lock.json && npm install --no-audit --no-fund
+
+      - name: Generate Tauri icons
+        run: npx tauri icon public/pwa-512x512.png
+
+      - name: Build and publish desktop installer
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: "v__VERSION__"
+          releaseName: "Python Data Types Lab v__VERSION__"
+          releaseBody: "Download the Windows installer (.exe) from the Assets below and run it."
+          releaseDraft: false
+          prerelease: false
+          args: ${{ matrix.args }}

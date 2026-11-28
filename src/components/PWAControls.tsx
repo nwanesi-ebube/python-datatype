@@ -4,6 +4,7 @@ import { useRegisterSW } from 'virtual:pwa-register/react';
 import { EngineMode } from '../engine/pyodideBridge';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { usePWAInstall } from '../hooks/usePWAInstall';
+import { isTauriDesktop } from '../utils/desktop';
 
 interface PWAInstallButtonProps {
   compact?: boolean;
@@ -13,7 +14,7 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ compact = fa
   const { isInstallable, isInstalled, isIOS, install } = usePWAInstall();
   const [showIOSGuide, setShowIOSGuide] = useState(false);
 
-  if (isInstalled) return null;
+  if (isTauriDesktop() || isInstalled) return null;
 
   if (isInstallable) {
     return (
@@ -98,7 +99,7 @@ export const EngineStatusControl: React.FC<EngineStatusTextProps> = ({
         <span>{statusText}</span>
       </span>
 
-      {isOnline && engineMode === 'builtin' && (
+      {!isTauriDesktop() && isOnline && engineMode === 'builtin' && (
         <button
           type="button"
           onClick={onEnablePyodide}

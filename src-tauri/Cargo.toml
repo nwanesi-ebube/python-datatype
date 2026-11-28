@@ -1,0 +1,19 @@
+[package]
+name = "python-data-types-lab"
+version = "1.0.0"
+description = "An interactive, animated Python learning simulator for variables, print(), input() and every core data type."
+authors = ["nwanesi-ebube"]
+edition = "2021"
+
+[lib]
+name = "python_data_types_lab_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-opener = "2"
