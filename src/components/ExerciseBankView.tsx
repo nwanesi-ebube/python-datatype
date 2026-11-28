@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import {
   BookOpen,
   Bug,
@@ -17,7 +17,8 @@ import {
 import { MODULES } from '../data/curriculum';
 import { MODULE_EXERCISE_BANKS } from '../data/moduleSummaries';
 import { executePythonGenerator } from '../engine/interpreter';
-import { CodeEditor } from './CodeEditor';
+
+const CodeEditor = lazy(() => import('./CodeEditor').then((m) => ({ default: m.CodeEditor })));
 
 export type ExerciseTab = 'mcq' | 'theory' | 'coding' | 'debugging';
 
@@ -442,15 +443,23 @@ export const ExerciseBankView: React.FC<ExerciseBankViewProps> = ({
                     </div>
 
                     <div className="h-36 rounded-lg border border-[var(--border-hairline)] overflow-hidden">
-                      <CodeEditor
-                        value={source}
-                        onChange={(next) =>
-                          setCodeDrafts((prev) => ({ ...prev, [ex.id]: next }))
+                      <Suspense
+                        fallback={
+                          <div className="h-full flex items-center justify-center bg-[var(--bg-surface)] text-xs text-[var(--text-muted)]">
+                            Loading code editor…
+                          </div>
                         }
-                        activeLine={null}
-                        onRunShortcut={() => handleCheckCode(ex.id, source, ex.expectedOutput)}
-                        showMobileBar={true}
-                      />
+                      >
+                        <CodeEditor
+                          value={source}
+                          onChange={(next) =>
+                            setCodeDrafts((prev) => ({ ...prev, [ex.id]: next }))
+                          }
+                          activeLine={null}
+                          onRunShortcut={() => handleCheckCode(ex.id, source, ex.expectedOutput)}
+                          showMobileBar={true}
+                        />
+                      </Suspense>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2">
@@ -581,15 +590,23 @@ export const ExerciseBankView: React.FC<ExerciseBankViewProps> = ({
                     </div>
 
                     <div className="h-36 rounded-lg border border-[var(--border-hairline)] overflow-hidden">
-                      <CodeEditor
-                        value={source}
-                        onChange={(next) =>
-                          setCodeDrafts((prev) => ({ ...prev, [dbg.id]: next }))
+                      <Suspense
+                        fallback={
+                          <div className="h-full flex items-center justify-center bg-[var(--bg-surface)] text-xs text-[var(--text-muted)]">
+                            Loading code editor…
+                          </div>
                         }
-                        activeLine={null}
-                        onRunShortcut={() => handleCheckCode(dbg.id, source, dbg.expectedOutput)}
-                        showMobileBar={true}
-                      />
+                      >
+                        <CodeEditor
+                          value={source}
+                          onChange={(next) =>
+                            setCodeDrafts((prev) => ({ ...prev, [dbg.id]: next }))
+                          }
+                          activeLine={null}
+                          onRunShortcut={() => handleCheckCode(dbg.id, source, dbg.expectedOutput)}
+                          showMobileBar={true}
+                        />
+                      </Suspense>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2">

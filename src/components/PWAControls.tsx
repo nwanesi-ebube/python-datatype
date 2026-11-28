@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Download, Wifi, WifiOff, Cpu } from 'lucide-react';
-import { usePWAInstall } from '../hooks/usePWAInstall';
-import { useOnlineStatus } from '../hooks/useOnlineStatus';
+import { Cpu, Download, RefreshCw, Wifi, WifiOff, X } from 'lucide-react';
+import { useRegisterSW } from 'virtual:pwa-register/react';
 import { EngineMode } from '../engine/pyodideBridge';
+import { useOnlineStatus } from '../hooks/useOnlineStatus';
+import { usePWAInstall } from '../hooks/usePWAInstall';
 
 interface PWAInstallButtonProps {
   compact?: boolean;
@@ -119,10 +120,44 @@ export const OfflineToast: React.FC = () => {
   return (
     <div
       role="status"
-      className="fixed bottom-16 md:bottom-4 left-4 z-40 flex items-center gap-2 rounded-lg border border-[var(--semantic-warning)] bg-[var(--semantic-warning-soft)] px-3 py-1.5 text-xs font-medium text-[var(--semantic-warning-text)] shadow-md"
+      className="no-print fixed bottom-16 md:bottom-4 left-4 z-40 flex items-center gap-2 rounded-lg border border-[var(--semantic-warning)] bg-[var(--semantic-warning-soft)] px-3 py-1.5 text-xs font-medium text-[var(--semantic-warning-text)] shadow-md"
     >
       <WifiOff className="w-3.5 h-3.5 shrink-0" />
       <span>Offline mode — built-in Python engine and cached lessons are active.</span>
+    </div>
+  );
+};
+
+export const PWAUpdatePrompt: React.FC = () => {
+  const {
+    needRefresh: [needRefresh, setNeedRefresh],
+    updateServiceWorker,
+  } = useRegisterSW();
+
+  if (!needRefresh) return null;
+
+  return (
+    <div
+      role="status"
+      className="no-print fixed bottom-16 md:bottom-4 right-4 z-50 flex items-center gap-2.5 rounded-xl border border-[var(--accent-primary)] bg-[var(--bg-surface)] px-3.5 py-2 text-xs text-[var(--text-primary)] shadow-lg"
+    >
+      <RefreshCw className="w-3.5 h-3.5 text-[var(--accent-primary)] shrink-0" aria-hidden="true" />
+      <span className="font-medium">New version ready</span>
+      <button
+        type="button"
+        onClick={() => updateServiceWorker(true)}
+        className="rounded-md bg-[var(--accent-primary)] px-2.5 py-1 font-semibold text-[var(--accent-primary-text)] hover:bg-[var(--accent-primary-hover)] transition-colors"
+      >
+        Reload
+      </button>
+      <button
+        type="button"
+        onClick={() => setNeedRefresh(false)}
+        aria-label="Dismiss update notice"
+        className="rounded-md p-1 text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]"
+      >
+        <X className="w-3.5 h-3.5" />
+      </button>
     </div>
   );
 };

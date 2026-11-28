@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   BookOpen,
   Code2,
@@ -13,25 +13,26 @@ import {
   Terminal,
   Menu as MenuIcon,
 } from 'lucide-react';
-import { CapstonesView } from './components/CapstonesView';
 import { ConsolePanel } from './components/ConsolePanel';
-import { DoDontBoard } from './components/DoDontBoard';
-import { ExerciseBankView } from './components/ExerciseBankView';
-import { GamesHubView } from './components/GamesHubView';
-import { InputDetectiveGame } from './components/InputDetectiveGame';
 import { LessonStage } from './components/LessonStage';
 import { ActiveRoute, MenuPanel } from './components/MenuPanel';
 import { MemoryInspector } from './components/MemoryInspector';
-import { MethodExplorerView } from './components/MethodExplorerView';
-import { NameCheckerView } from './components/NameCheckerView';
-import { NamePoliceGame } from './components/NamePoliceGame';
-import { PrintPerfectGame } from './components/PrintPerfectGame';
-import { PrintStudioView } from './components/PrintStudioView';
-import { EngineStatusControl, OfflineToast, PWAInstallButton } from './components/PWAControls';
+import { EngineStatusControl, OfflineToast, PWAInstallButton, PWAUpdatePrompt } from './components/PWAControls';
 import { SettingsModal } from './components/SettingsModal';
-import { TeacherSummariesView } from './components/TeacherSummariesView';
-import { TrophyRoomView } from './components/TrophyRoomView';
-import { TypeLabsView } from './components/TypeLabsView';
+
+const CapstonesView = lazy(() => import('./components/CapstonesView').then((m) => ({ default: m.CapstonesView })));
+const DoDontBoard = lazy(() => import('./components/DoDontBoard').then((m) => ({ default: m.DoDontBoard })));
+const ExerciseBankView = lazy(() => import('./components/ExerciseBankView').then((m) => ({ default: m.ExerciseBankView })));
+const GamesHubView = lazy(() => import('./components/GamesHubView').then((m) => ({ default: m.GamesHubView })));
+const InputDetectiveGame = lazy(() => import('./components/InputDetectiveGame').then((m) => ({ default: m.InputDetectiveGame })));
+const MethodExplorerView = lazy(() => import('./components/MethodExplorerView').then((m) => ({ default: m.MethodExplorerView })));
+const NameCheckerView = lazy(() => import('./components/NameCheckerView').then((m) => ({ default: m.NameCheckerView })));
+const NamePoliceGame = lazy(() => import('./components/NamePoliceGame').then((m) => ({ default: m.NamePoliceGame })));
+const PrintPerfectGame = lazy(() => import('./components/PrintPerfectGame').then((m) => ({ default: m.PrintPerfectGame })));
+const PrintStudioView = lazy(() => import('./components/PrintStudioView').then((m) => ({ default: m.PrintStudioView })));
+const TeacherSummariesView = lazy(() => import('./components/TeacherSummariesView').then((m) => ({ default: m.TeacherSummariesView })));
+const TrophyRoomView = lazy(() => import('./components/TrophyRoomView').then((m) => ({ default: m.TrophyRoomView })));
+const TypeLabsView = lazy(() => import('./components/TypeLabsView').then((m) => ({ default: m.TypeLabsView })));
 import { MODULE_A_LESSONS } from './data/moduleA';
 import { MODULE_B_LESSONS } from './data/moduleB';
 import { MODULE_C_LESSONS } from './data/moduleC';
@@ -621,8 +622,11 @@ export default function App() {
             </button>
           </nav>
 
-          {/* Zone 3: Single Primary Action */}
-          <div className="flex items-center shrink-0">
+          {/* Zone 3: Single Primary Action (+ mobile Install shortcut) */}
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="md:hidden">
+              <PWAInstallButton compact />
+            </div>
             <button
               type="button"
               onClick={() => setSettingsOpen(true)}
@@ -785,7 +789,15 @@ export default function App() {
                 onPredictSuccess={awardPredictXP}
               />
             )}
-            {route.view === 'name-checker' && (
+            {route.view !== 'lesson' && (
+              <Suspense
+                fallback={
+                  <div className="h-full flex items-center justify-center text-xs text-[var(--text-muted)]">
+                    Loading workspace…
+                  </div>
+                }
+              >
+                {route.view === 'name-checker' && (
               <NameCheckerView onTryInTheatre={handleRunCustomSnippet} />
             )}
             {route.view === 'do-dont' && (
@@ -912,6 +924,8 @@ export default function App() {
                 onOpenExercises={(moduleId) => navigate({ view: 'exercises', moduleId })}
               />
             )}
+              </Suspense>
+            )}
           </main>
 
           {/* RIGHT: Memory Inspector (Docked on lg+, Overlay Drawer on md) */}
@@ -989,7 +1003,15 @@ export default function App() {
                   mobileSubView={mobileTab === 'code' ? 'code' : 'learn'}
                 />
               )}
-              {route.view === 'name-checker' && (
+              {route.view !== 'lesson' && (
+                <Suspense
+                  fallback={
+                    <div className="h-full flex items-center justify-center text-xs text-[var(--text-muted)]">
+                      Loading workspace…
+                    </div>
+                  }
+                >
+                  {route.view === 'name-checker' && (
                 <NameCheckerView onTryInTheatre={handleRunCustomSnippet} />
               )}
               {route.view === 'do-dont' && (
@@ -1116,6 +1138,8 @@ export default function App() {
                   onOpenExercises={(moduleId) => navigate({ view: 'exercises', moduleId })}
                 />
               )}
+                </Suspense>
+              )}
             </>
           )}
 
@@ -1198,8 +1222,9 @@ export default function App() {
         onUpdate={updateSettings}
       />
 
-      {/* Calm Offline Notice */}
+      {/* Calm Offline Notice & PWA Update Prompt */}
       <OfflineToast />
+      <PWAUpdatePrompt />
     </div>
   );
 }

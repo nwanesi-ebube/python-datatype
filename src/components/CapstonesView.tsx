@@ -1,9 +1,10 @@
-import React, { useRef, useState } from 'react';
+import React, { Suspense, lazy, useRef, useState } from 'react';
 import { CheckCircle2, FolderGit2, Play, RotateCcw, Send, Terminal } from 'lucide-react';
 import { CAPSTONE_PROJECTS } from '../data/stage8';
 import { executePythonGenerator } from '../engine/interpreter';
 import { EngineStepYield } from '../types/lab';
-import { CodeEditor } from './CodeEditor';
+
+const CodeEditor = lazy(() => import('./CodeEditor').then((m) => ({ default: m.CodeEditor })));
 
 interface CapstonesViewProps {
   completedIds: string[];
@@ -187,12 +188,20 @@ export const CapstonesView: React.FC<CapstonesViewProps> = ({
             <p className="text-xs text-[var(--text-secondary)]">{project.description}</p>
 
             <div className="h-72 rounded-lg border border-[var(--border-hairline)] overflow-hidden">
-              <CodeEditor
-                value={activeCode}
-                onChange={(next) => setCodes((prev) => ({ ...prev, [project.id]: next }))}
-                activeLine={null}
-                onRunShortcut={startCapstoneRun}
-              />
+              <Suspense
+                fallback={
+                  <div className="h-full flex items-center justify-center bg-[var(--bg-surface)] text-xs text-[var(--text-muted)]">
+                    Loading code editor…
+                  </div>
+                }
+              >
+                <CodeEditor
+                  value={activeCode}
+                  onChange={(next) => setCodes((prev) => ({ ...prev, [project.id]: next }))}
+                  activeLine={null}
+                  onRunShortcut={startCapstoneRun}
+                />
+              </Suspense>
             </div>
           </div>
 

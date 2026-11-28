@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Suspense, lazy, useState } from 'react';
 import {
   AlertTriangle,
   BookOpen,
@@ -13,8 +13,9 @@ import {
   Volume2,
 } from 'lucide-react';
 import { LessonDefinition, TraceStep } from '../types/lab';
-import { CodeEditor } from './CodeEditor';
 import { StoryScene } from './StoryScene';
+
+const CodeEditor = lazy(() => import('./CodeEditor').then((m) => ({ default: m.CodeEditor })));
 
 interface LessonStageProps {
   lesson: LessonDefinition;
@@ -381,12 +382,20 @@ export const LessonStage: React.FC<LessonStageProps> = ({
 
             {/* Editable Python CodeMirror 6 Area */}
             <div className="h-[220px] sm:h-[250px] min-h-[180px]">
-              <CodeEditor
-                value={code}
-                onChange={onCodeChange}
-                activeLine={activeLine}
-                onRunShortcut={onPlay}
-              />
+              <Suspense
+                fallback={
+                  <div className="h-full flex items-center justify-center bg-[var(--bg-surface)] text-xs text-[var(--text-muted)]">
+                    Loading code editor…
+                  </div>
+                }
+              >
+                <CodeEditor
+                  value={code}
+                  onChange={onCodeChange}
+                  activeLine={activeLine}
+                  onRunShortcut={onPlay}
+                />
+              </Suspense>
             </div>
           </div>
         )}
